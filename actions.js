@@ -9,6 +9,7 @@ export const ADD_TICKET = 'ADD_TICKET';
 export const REMOVE_TICKET = 'REMOVE_TICKET';
 export const ADD_ROW = 'ADD_ROW';
 export const REMOVE_ROW = 'REMOVE_ROW';
+export const ADD_CELL = 'ADD_CELL';
 
 /*
  * other constants
@@ -65,5 +66,14 @@ export function removeRow(t) {
     return {
         type: REMOVE_ROW,
         ticketID: t
+    }
+}
+
+export function addCell(ticket, row, cell) {
+    return {
+        type: ADD_CELL,
+        ticketID: ticket,
+        rowID: row,
+        cell: {key: cell.key, value: cell.value}
     }
 }

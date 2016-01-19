@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, VisibilityFilters, ADD_TICKET, REMOVE_TICKET } from './actions'
-import {ADD_ROW, REMOVE_ROW} from './actions'
+import {ADD_ROW, REMOVE_ROW, ADD_CELL} from './actions'
 const { SHOW_ALL } = VisibilityFilters
 
 function visibilityFilter(state = SHOW_ALL, action) {
@@ -76,10 +76,35 @@ function ticket (state, action) {
     }
 }
 
+function copyRows (state, action) {
+
+    let ticketRows = state[action.ticketID].rows;
+    let rows = [];
+
+    ticketRows.forEach( (row) => {
+        rows.push(row);
+    });
+
+    return rows;
+}
+
+function packageTickets (state, action, newTicket) {
+
+    let newTickets = [];
+    state.forEach( (ticket, i) => {
+        if (i != action.ticketID) {
+            newTickets.push(ticket);
+        } else {
+            newTickets.push(newTicket);
+        }
+    });
+
+    console.log(newTickets);
+    return newTickets;
+}
 
 function tickets(state=[], action) {
     console.log('tickets was called with state', state, 'and action', action);
-    console.log(state);
     switch(action.type) {
         case ADD_TICKET:
 
@@ -100,64 +125,49 @@ function tickets(state=[], action) {
         {
             if (action.ticketID === undefined) return state;
 
-
-            let thisTicket = state[action.ticketID];
-            if (thisTicket.rows.length >= 5) return state;
-
-            let rows = [];
-
-            thisTicket.rows.forEach( (row) => {
-                rows.push(row);
-            });
+            let rows = copyRows(state, action);
+            if (rows.length === 5) return state;
 
             rows.push(row(state, action));
+
             let newTicket = {rows: rows};
-
-
             let newTickets = [];
+            return packageTickets(state, action, newTicket);
 
-            //modify only the ticket with delta row
-            state.forEach( (ticket, i) => {
-                if (i != action.ticketID) {
-                    newTickets.push(ticket);
-                } else {
-                    newTickets.push(newTicket);
-                }
-            });
-
-            return newTickets;
         }
 
         case REMOVE_ROW:
         {
             if (action.ticketID === undefined) return state;
 
-            let thisTicket = state[action.ticketID];
-            if (thisTicket.rows.length <= 1) return state;
+            let rows = copyRows(state, action);
+            if (rows.length === 1) return state;
 
-            let rows = [];
-            thisTicket.rows.forEach( (row) => {
-                rows.push(row);
-            });
             rows.pop();
 
             let newTicket = {rows: rows};
-
-            let newTickets = [];
-            state.forEach( (ticket, i) => {
-                if (i != action.ticketID) {
-                    newTickets.push(ticket);
-                } else {
-                    newTickets.push(newTicket);
-                }
-            });
-
-            //return row(state, action);
-            console.log('newtickets')
-            console.log(newTickets);
-            return newTickets;
+            return packageTickets(state, action, newTicket);
 
         }
+
+        case ADD_CELL:
+        {
+            if (action.ticketID === undefined || action.rowID === undefined || action.cell === undefined) {
+                return state;
+            }
+
+            if (action.rowID >= 5 || action.rowID < 0) return state;
+
+            let rows = copyRows(state, action);
+            let row = rows[action.rowID];
+            row[action.cell.key] = action.cell.value;
+
+
+            let newTicket = {rows: rows};
+            return packageTickets(state, action, newTicket);
+
+        }
+
 
         default:
             return state;
@@ -169,7 +179,7 @@ function tickets(state=[], action) {
 const todoApp = combineReducers({
     visibilityFilter,
     todos,
-    tickets,
+    tickets
 })
 
 export default todoApp

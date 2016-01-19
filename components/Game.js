@@ -1,6 +1,10 @@
 import React, { Component, PropTypes } from 'react'
 
 
+function log(msg) {
+    //console.log(msg);
+}
+
 class TicketRow extends Component {
 
     render() {
@@ -44,11 +48,26 @@ class Ticket extends Component {
     }
 }
 
+class WinningNumbers extends Component {
+    render() {
+        return (
+            <div id="winner">
+                <div>
+                    <span>Winning Numbers</span>
+                    <button>Evaluate</button>
+                </div>
+                <TicketRow />
+            </div>
+        );
+
+
+    }
+}
 
 export default class Game extends Component {
 
     ticket(mode) {
-        console.log('ticket ' + mode);
+        log('ticket ' + mode);
         if (mode === 'add') {
             //this.props.onAddTicketClick();
             this.props.onTicketClick('add');
@@ -62,8 +81,8 @@ export default class Game extends Component {
 
     }
     render() {
-        console.log('Game render called');
-        console.log(this.props.tickets);
+        log('Game render called');
+        log(this.props.tickets);
 
         let tickets = [];
         this.props.tickets.forEach( (ticket, i) => {
@@ -81,6 +100,9 @@ export default class Game extends Component {
                     <button onClick={ () => this.props.onTicketClick('remove')}>-</button>
                 </div>
 
+                <div>
+                    <WinningNumbers />
+                </div>
                 {tickets}
 
             </div>

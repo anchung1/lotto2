@@ -29,8 +29,22 @@ body {
 #game > div button {
     flex-basis: 30px;
 }
-#game > div button {
 
+#winner {
+
+}
+#winner > div:nth-child(1) {
+    display: inline-flex;
+    /*background-color: #0b97c4;*/
+    width: auto;
+}
+#winner >div:nth-child(1) span {
+    flex-basis: auto;
+    margin-right: 25px;
+}
+
+#winner >div:nth-child(1) button {
+    flex-basis: auto;
 }
 
 .ticket {
