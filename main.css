@@ -4,12 +4,64 @@ body {
 }
 
 #top {
+
+}
+
+#game {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
 }
 
-#Ticket {
+#game > div {
+    display: flex;
+    margin-bottom: 25px;
+    width: 50%;
+}
+
+
+#game > div > span{
+    flex-basis: 100px;
+    margin-right: 20px;
+}
+
+#game > div button {
+    flex-basis: 30px;
+}
+#game > div button {
+
+}
+
+.ticket {
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
+}
+
+.ticket .controls {
+    display: flex;
+    width: 100%;
+
+}
+
+.ticket .controls span {
+    flex-basis: 70px;
+}
+
+.ticket .controls button {
+    flex-basis:  30px;
+}
+
+.ticket-row {
+    display: flex;
+
+}
+
+
+.balls {
+    flex-basis: 50px;
+}
+.qp {
+    margin-left: 20px;
 }
