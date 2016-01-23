@@ -10,16 +10,22 @@ export const REMOVE_TICKET = 'REMOVE_TICKET';
 export const ADD_ROW = 'ADD_ROW';
 export const REMOVE_ROW = 'REMOVE_ROW';
 export const ADD_CELL = 'ADD_CELL';
+export const ROW_DATA = 'ROW_DATA';
 
 /*
  * other constants
  */
+export const EntryType = {
+    WINNING_ENTRY: 'WINNING_ENTRY',
+    ROW_ENTRY: 'ROW_ENTRY'
+};
 
 export const VisibilityFilters = {
     SHOW_ALL: 'SHOW_ALL',
     SHOW_COMPLETED: 'SHOW_COMPLETED',
     SHOW_ACTIVE: 'SHOW_ACTIVE'
 }
+
 
 /*
  * action creators
@@ -68,6 +74,17 @@ export function removeRow(t) {
         ticketID: t
     }
 }
+
+export function rowData(entryType, ticket, row, data) {
+    return {
+        type: ROW_DATA,
+        entryType: entryType,
+        ticketID: ticket,
+        rowID: row,
+        entryData: data
+    }
+}
+
 
 export function addCell(ticket, row, cell) {
     return {

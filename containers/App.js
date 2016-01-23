@@ -1,21 +1,23 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { addTodo, completeTodo, setVisibilityFilter, VisibilityFilters, addTicket, removeTicket } from '../actions'
-import {addRow, removeRow, addCell} from '../actions'
+import {addRow, removeRow, addCell, EntryType, rowData} from '../actions'
 import AddTodo from '../components/AddTodo'
 import TodoList from '../components/TodoList'
 import Footer from '../components/Footer'
 import Game from '../components/Game'
 
+const {WINNING_ENTRY, ROW_ENTRY} = EntryType;
 
 class App extends Component {
     render() {
         // Injected by connect() call:
-        const { dispatch, visibleTodos, visibilityFilter, tickets } = this.props;
+        const { dispatch, visibleTodos, visibilityFilter, tickets, winningNumbers } = this.props;
         return (
             <div>
                 <Game
                     tickets={tickets}
+                    winningNumbers={winningNumbers}
                     onTicketClick = { (mode) => {
                         if (mode==='add') {
                             dispatch(addTicket());
@@ -32,6 +34,12 @@ class App extends Component {
                             dispatch(removeRow(t));
                         }
                     }}
+                    onWinningNumberClick = {
+                        (data) => {dispatch(rowData(WINNING_ENTRY, 0, 0, data))}
+                    }
+                    onRowNumberClick = {
+                        (data, t, r) => {dispatch(rowData(ROW_ENTRY, t, r, data))}
+                    }
 
 
 
@@ -70,7 +78,8 @@ function select(state) {
     return {
         visibleTodos: selectTodos(state.todos, state.visibilityFilter),
         visibilityFilter: state.visibilityFilter,
-        tickets: state.tickets
+        tickets: state.tickets,
+        winningNumbers: state.winningNumbers
     }
 }
 

@@ -1,7 +1,12 @@
 import { combineReducers } from 'redux'
 import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, VisibilityFilters, ADD_TICKET, REMOVE_TICKET } from './actions'
-import {ADD_ROW, REMOVE_ROW, ADD_CELL} from './actions'
+import {ADD_ROW, REMOVE_ROW, ADD_CELL, ROW_DATA, EntryType} from './actions'
 const { SHOW_ALL } = VisibilityFilters
+const { WINNING_ENTRY, ROW_ENTRY} = EntryType;
+
+function log(msg) {
+    console.log(msg);
+}
 
 function visibilityFilter(state = SHOW_ALL, action) {
     switch (action.type) {
@@ -51,12 +56,28 @@ function todos(state = [], action) {
     }
 }
 
+//===========================
+function checkEntries(keys, checkThis) {
+
+    for (let key in keys) {
+        if (checkThis[key] === undefined) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function emptyRow() {
+    return ({1:'', 2:'', 3:'', 4:'', 5:'', pb:''});
+}
+
 function row (state, action) {
     switch(action.type) {
         case ADD_TICKET:
         case ADD_ROW:
 
-            return ({1:'', 2:'', 3:'', 4:'', 5:'', qp:''})
+            return (emptyRow())
 
         default:
             return state;
@@ -99,7 +120,7 @@ function packageTickets (state, action, newTicket) {
         }
     });
 
-    console.log(newTickets);
+    log(newTickets);
     return newTickets;
 }
 
@@ -123,7 +144,7 @@ function tickets(state=[], action) {
 
         case ADD_ROW:
         {
-            if (action.ticketID === undefined) return state;
+            if (!checkEntries({ticketID: 1}, action)) return state;
 
             let rows = copyRows(state, action);
             if (rows.length === 5) return state;
@@ -138,7 +159,7 @@ function tickets(state=[], action) {
 
         case REMOVE_ROW:
         {
-            if (action.ticketID === undefined) return state;
+            if (!checkEntries({ticketID: 1}, action)) return state;
 
             let rows = copyRows(state, action);
             if (rows.length === 1) return state;
@@ -152,9 +173,9 @@ function tickets(state=[], action) {
 
         case ADD_CELL:
         {
-            if (action.ticketID === undefined || action.rowID === undefined || action.cell === undefined) {
-                return state;
-            }
+            //TODO: test this
+            if (!checkEntries({ticketID: 1, rowID: 1, cell: 1} , action)) return state;
+
 
             if (action.rowID >= 5 || action.rowID < 0) return state;
 
@@ -168,6 +189,23 @@ function tickets(state=[], action) {
 
         }
 
+        case ROW_DATA:
+        {
+            if (!checkEntries({ticketID: 1, rowID: 1, entryType: 1}, action)) return state;
+            if (action.entryType === WINNING_ENTRY) return state;
+
+            console.log('have ROW_DATA');
+            let rows = copyRows(state, action);
+            let row = rows[action.rowID];
+
+            let i = 0;
+            for (let key in row) {
+                row[key] = action.entryData[i++];
+            }
+
+            let newTicket = {rows: rows};
+            return packageTickets(state, action, newTicket);
+        }
 
         default:
             return state;
@@ -175,11 +213,38 @@ function tickets(state=[], action) {
 
 }
 
+function winningNumbers(state={}, action) {
+
+    console.log('winningNUmbers was called with state', state, 'and action', action);
+    switch( action.type) {
+        case ROW_DATA:
+        {
+            log(action.entryData);
+            if (!checkEntries({ticketID: 1, rowID: 1, entryType: 1}, action)) return state;
+            if  (action.entryType === ROW_ENTRY) return state;
+
+            let row = emptyRow();
+            let i=0;
+            for (let key in row) {
+                row[key] = action.entryData[i++];
+            }
+
+            return row;
+        }
+
+        default:
+            return state;
+    }
+
+
+}
+
 
 const todoApp = combineReducers({
     visibilityFilter,
     todos,
-    tickets
+    tickets,
+    winningNumbers
 })
 
 export default todoApp

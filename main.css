@@ -50,7 +50,7 @@ body {
 .ticket {
     margin-bottom: 25px;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
 }
 
 .ticket .controls {
@@ -76,6 +76,11 @@ body {
 .balls {
     flex-basis: 50px;
 }
-.qp {
+.qp, .prize {
     margin-left: 20px;
 }
+
+.prize {
+    color: red;
+}
+
