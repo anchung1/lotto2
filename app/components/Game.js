@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import {FindPrize} from './PrizeEval';
 import {EntryObj} from './EntryObj';
 //import classNames from 'classnames';
+import {ajax} from '../actions';
 
 function log(msg) {
     //console.log(msg);
@@ -227,6 +228,10 @@ class WinningNumbers extends Component {
 
 export default class Game extends Component {
 
+    ajaxTest() {
+        console.log('in ajax test');
+        ajax().getCookieID();
+    }
     injectTicket() {
         //console.log('inject Ticket');
 
@@ -289,6 +294,11 @@ export default class Game extends Component {
                         onClick={ () => this.injectTicket()} >
                         Inject Data
                     </button>
+                    <button className="inject"
+                        onClick={ () => this.ajaxTest()} >
+                        Ajax
+                    </button>
+
                 </div>
 
                 <div>

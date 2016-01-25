@@ -9,63 +9,34 @@ var Dora = db.Dora;
 var Users = db.Users;
 var Entry = db.Entry;
 
-var api_key = "76cceea6d278cbd158a726e6860951e7";
-var flickrApiOptions = ["name=value", "format=json"];
 
-//jsonFlickrApi({"photos":{"page":1,"pages":10,"perpage":100,"total":1000}});
-
-
-function constructLinks(body) {
-
-    var myRe = /jsonFlickrApi\((.+)\)/;
-    var result = myRe.exec(body);
-
-    if (!result[1]) undefined;
-    var obj = JSON.parse(result[1]);
-    var photo = obj.photos.photo;
-
-    //https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
-    var url = 'https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg';
-    var images = [];
-    photo.forEach(function(pic) {
-        var url1 = url.replace('{farm-id}', pic.farm).replace('{server-id}', pic.server)
-            .replace('{id}', pic.id).replace('{secret}', pic.secret);
-        images.push(url1);
-    });
-
-    return images;
-}
-
-function flickrRequest(method, options, req, res, next) {
-    var baseURL = "https://api.flickr.com/services/rest/";
-    var flickreq = "?method="+method + "&api_key="+api_key;
-
-    options.forEach(function(opt) {
-        flickreq += "&" + opt;
-    });
-
-    request(baseURL+flickreq, function(err, resp, body) {
-        if (err) return next(err);
-
-        var urls = constructLinks(body);
-        return res.json({urls: urls});
-    });
-
-
-}
+var cookieResp = {
+    signed: true,
+    secure: true,
+    httpOnly: true
+};
 
 /* GET users listing. */
 router.get('/greet', function (req, res, next) {
     console.log('greet');
-
-
-    res.send('greetings');
+    res.send('greetings Lotto');
 });
 
-router.get('/flickr', function(req, res, next) {
-    flickrApiOptions.push("per_page=3");
-    flickrRequest('flickr.photos.getRecent', flickrApiOptions, req, res, next);
+router.get('/setCookie', function(req, res, next) {
+    console.log(req.cookies);
+    res.cookie('_id', '1234', cookieResp);
+    res.json({result: 'success'});
+
 });
+
+router.get('/getCookie', function(req, res, next) {
+    var id = req.signedCookies._id;
+    console.log(id);
+    res.json({id: id});
+});
+
+
+
 
 router.post('/db', function (req, res, next) {
     var id = req.signedCookies._id;

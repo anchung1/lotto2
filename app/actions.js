@@ -111,3 +111,49 @@ export function injectWinner(data) {
         data: data
     }
 }
+
+
+//AJAX calls
+class restAPI {
+    constructor(url) {
+        this._url = url;
+    }
+
+    getGreet() {
+        var url = this._url + 'api/greet';
+        $.get(url).then(
+            function(data) {
+                console.log(data);
+            }
+        )
+    }
+
+    getCookieID() {
+        var baseUrl = this._url;
+        var url = this._url + 'api/setCookie';
+        $.get(url).then(
+            function(data) {
+                console.log(data);
+
+            }
+        ).always( () => {
+            var url = this._url + 'api/getCookie';
+            $.get(url).then(
+                function(data) {
+                    console.log(data);
+                }
+            );
+        });
+
+    }
+
+
+};
+
+let restUrl = 'https://localhost:3001/';
+let restObj = new restAPI(restUrl);
+export function ajax() {
+    return restObj;
+}
+
+
