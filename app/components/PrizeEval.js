@@ -1,6 +1,7 @@
 import {winTable} from './winTable';
 import 'babel-polyfill';
 import {assert} from 'chai';
+import {EntryObj} from './EntryObj';
 
 // Returns a random integer between min (included) and max (excluded)
 // Using Math.round() will give you a non-uniform distribution!
@@ -48,7 +49,7 @@ class LottoEval {
     }
 
     static createPBObject(balls, PB) {
-        var row = {1: '', 2: '', 3: '', 4: '', 5: '', pb: ''};
+        var row = EntryObj();
 
         //verify that numbers are unique
         for (let i=0; i<balls.length; i++) {
@@ -170,9 +171,9 @@ class LottoEval {
         let rowPB = rowArr.pop();
 
         let pattern = [];
-        winArr.forEach((value, i) => {
+        rowArr.forEach((value, i) => {
 
-            let found = rowArr.find((entry) => {
+            let found = winArr.find((entry) => {
                 return (entry === value);
             });
 

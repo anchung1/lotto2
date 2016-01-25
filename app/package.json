@@ -31,6 +31,7 @@
   "dependencies": {
     "babel-polyfill": "^6.3.14",
     "babel-runtime": "^6.3.19",
+    "classnames": "^2.2.3",
     "deep-freeze": "0.0.1",
     "expect": "^1.13.4",
     "immutable": "^3.7.6",

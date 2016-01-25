@@ -11,6 +11,9 @@ export const ADD_ROW = 'ADD_ROW';
 export const REMOVE_ROW = 'REMOVE_ROW';
 export const ADD_CELL = 'ADD_CELL';
 export const ROW_DATA = 'ROW_DATA';
+export const INJECT_TICKETS = 'INJECT_TICKETS';
+export const INJECT_WINNER = 'INJECT_WINNER';
+
 
 /*
  * other constants
@@ -92,5 +95,19 @@ export function addCell(ticket, row, cell) {
         ticketID: ticket,
         rowID: row,
         cell: {key: cell.key, value: cell.value}
+    }
+}
+
+export function injectTickets(data) {
+    return {
+        type: INJECT_TICKETS,
+        data: data
+    }
+}
+
+export function injectWinner(data) {
+    return {
+        type: INJECT_WINNER,
+        data: data
     }
 }

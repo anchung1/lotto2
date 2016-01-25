@@ -17,7 +17,7 @@ body {
 #game > div {
     display: flex;
     margin-bottom: 25px;
-    width: 50%;
+    width: 75%;
 }
 
 
@@ -28,6 +28,11 @@ body {
 
 #game > div button {
     flex-basis: 30px;
+}
+
+#game > div .inject {
+    margin-left: 20px;
+    flex-basis: 100px;
 }
 
 #winner {
@@ -69,18 +74,22 @@ body {
 
 .ticket-row {
     display: flex;
-
 }
-
 
 .balls {
-    flex-basis: 50px;
+    width: 50px;
 }
-.qp, .prize {
+.pb, .prize {
     margin-left: 20px;
 }
 
 .prize {
+    color: red;
+    width: 150px;
+}
+
+.inhigh {
+    border: 3px solid red;
     color: red;
 }
 

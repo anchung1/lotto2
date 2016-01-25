@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import {FindPrize} from './PrizeEval';
+import {EntryObj} from './EntryObj';
+//import classNames from 'classnames';
 
 function log(msg) {
     //console.log(msg);
@@ -37,7 +39,7 @@ class TicketRow extends Component {
         this.insertBalls (values, this.refs.ball3.value);
         this.insertBalls (values, this.refs.ball4.value);
         this.insertBalls (values, this.refs.ball5.value);
-        this.insertBalls (values, this.refs.ballQP.value);
+        this.insertBalls (values, this.refs.ballPB.value);
 
         if (values.length < 6) {
             return;
@@ -57,6 +59,8 @@ class TicketRow extends Component {
 
     keypress(event) {
 
+        /*console.log('keypress');
+        console.log(event.target);*/
         //if (event.which === 32) console.log('space key detected');
         //$(this.refs.ball1).next().focus();
 
@@ -67,39 +71,89 @@ class TicketRow extends Component {
 
     render() {
 
-        console.log(this.props.prize);
+
+        let value = ["", "", "", "", "", ""];
+        if (this.props.data) {
+
+            //this sets the default values for input fields
+            //ticket number case
+            value = Object.keys(this.props.data).map( (key) => {
+                return this.props.data[key];
+            });
+
+            //for already mounted component, set the input value
+            //winning number case
+            if (Object.keys(this.props.data).length) {
+                let vals = Object.keys(this.props.data).map( (key) => {
+                    return this.props.data[key];
+                });
+
+                let i=0;
+                //this guy iterates all the refs on this object
+                for (var ref in this.refs) {
+                    this.refs[ref].value = vals[i++];
+                }
+            }
+        }
+
+        let cl = {balls: 1};
+        let cls = [];
+
         let prize = <div></div>;
         if (this.props.prize && this.props.prize.val > 0) {
             prize = <span className="prize">{this.props.prize.prize}</span>
-            //console.log(this.props.prize);
+            this.props.prize.pattern.forEach( (val) => {
+                if (val === 1) {
+                    cls.push('balls inhigh');
+                } else {
+                    cls.push('balls');
+                }
+            });
+
+            //console.log(this.props.prize.pattern);
+        } else {
+            cls.push('balls');
+            cls.push('balls');
+            cls.push('balls');
+            cls.push('balls');
+            cls.push('balls');
+            cls.push('balls');
         }
 
         return (
             <div className="ticket-row">
-                <input ref="ball1" type="text" className="balls"
+                <input ref="ball1" type="text" className={cls[0]}
                        onBlur={this.blur.bind(this, 'ball1')}
                        onFocus={this.focus.bind(this, 'ball1')}
-                       placeholder="ball1"/>
-                <input ref="ball2" type="text" className="balls"
+                       defaultValue={value[0]}
+                       placeholder="ball 1"/>
+                <input ref="ball2" type="text" className={cls[1]}
                        onBlur={this.blur.bind(this, 'ball2')}
                        onFocus={this.focus.bind(this, 'ball2')}
-                       placeholder="ball 2"/>
-                <input ref="ball3" type="text" className="balls"
+                       defaultValue={value[1]}
+                       placeholder="ball 2" />
+                <input ref="ball3" type="text" className={cls[2]}
                        onBlur={this.blur.bind(this, 'ball3')}
                        onFocus={this.focus.bind(this, 'ball3')}
+                       defaultValue={value[2]}
                        placeholder="ball 3"/>
-                <input ref="ball4" type="text" className="balls"
+                <input ref="ball4" type="text" className={cls[3]}
                        onBlur={this.blur.bind(this, 'ball4')}
                        onFocus={this.focus.bind(this, 'ball4')}
+                       defaultValue={value[3]}
                        placeholder="ball 4"/>
-                <input ref="ball5" type="text" className="balls"
+                <input ref="ball5" type="text" className={cls[4]}
                        onBlur={this.blur.bind(this, 'ball5')}
                        onFocus={this.focus.bind(this, 'ball5')}
+                       defaultValue={value[4]}
                        placeholder="ball 5"/>
-                <input ref="ballQP" type="text" className="balls qp"
-                       onBlur={this.blur.bind(this, 'ballQP')}
-                       onFocus={this.focus.bind(this, 'ballQP')}
-                       placeholder="QP"/>
+                <input ref="ballPB" type="text" className={cls[5] + ' pb'}
+                       onBlur={this.blur.bind(this, 'ballPB')}
+                       onFocus={this.focus.bind(this, 'ballPB')}
+                       defaultValue={value[5]}
+                       placeholder="PB"/>
+
+
 
                 {prize}
             </div>
@@ -113,7 +167,7 @@ class Ticket extends Component {
         let prizeArr = [];
         if (this.props.winningNumbers) {
 
-            console.log(this.props.winningNumbers);
+            //console.log(this.props.winningNumbers);
             this.props.rows.forEach( (row) => {
 
                 let prize = FindPrize(this.props.winningNumbers, row);
@@ -128,6 +182,7 @@ class Ticket extends Component {
         let ticketRows = [];
         for (let i=0; i<this.props.rows.length; i++) {
             let elem = <TicketRow key={i} ticket={ticketID} row={i}
+                                  data = {this.props.rows[i]}
                                   prize = {prizeArr[i]}
                                   onRowDoneClick = {this.props.onRowNumberClick}/>;
             ticketRows.push(elem);
@@ -141,9 +196,7 @@ class Ticket extends Component {
                     <button onClick = { () => this.props.onRowClick('remove', ticketID)} tabIndex="-1">-</button>
                 </div>
 
-                <div>
-                    {ticketRows}
-                </div>
+                {ticketRows}
             </div>
         )
     }
@@ -152,6 +205,7 @@ class Ticket extends Component {
 
 class WinningNumbers extends Component {
     render() {
+
         return (
             <div id="winner">
                 <div>
@@ -160,7 +214,10 @@ class WinningNumbers extends Component {
                 </div>
                 <TicketRow
                     ticket={0} row={0}
-                    onRowDoneClick = {this.props.onWinningNumberClick} />
+                    onRowDoneClick = {this.props.onWinningNumberClick}
+                    data = {this.props.data}
+                    //debug = {1}
+                />
             </div>
         );
 
@@ -170,30 +227,45 @@ class WinningNumbers extends Component {
 
 export default class Game extends Component {
 
-    ticket(mode) {
-        log('ticket ' + mode);
-        if (mode === 'add') {
-            //this.props.onAddTicketClick();
-            this.props.onTicketClick('add');
-        }
+    injectTicket() {
+        //console.log('inject Ticket');
 
-        if (mode === 'remove') {
-            //this.props.onRemoveTicketClick();
-            this.props.onTicketClick('remove');
-        }
+        let data = [];
+        let rows = [];
+        rows.push(EntryObj([1, 2, 3, 4, 5, 6]));
+        rows.push(EntryObj([1, 2, 3, 4, 5, 7]));
+        rows.push(EntryObj([1, 2, 3, 4, 5, 8]));
+
+        let newTicket = {rows: rows};
 
 
+        let rows1 = [];
+        rows1.push(EntryObj([11, 22, 3, 4, 5, 6]));
+        rows1.push(EntryObj([11, 22, 3, 4, 5, 7]));
+        rows1.push(EntryObj([11, 22, 3, 4, 5, 8]));
+
+        let newTicket1 = {rows: rows1};
+
+        data.push(newTicket);
+        data.push(newTicket1);
+
+        this.props.onInjectTicketsClick(data);
+
+        let winner = EntryObj([1, 2, 33, 44, 55, 6]);
+        this.props.onInjectWinnerClick(winner);
+        //console.log(data);
     }
     render() {
         console.log('Game render called');
-        /*console.log(this.props.tickets);
-        console.log(this.props.winningNumbers);*/
+        //console.log(this.props.tickets);
+        //console.log(this.props.winningNumbers);
 
 
         //FindPrize('Tony');
 
         let tickets = [];
         this.props.tickets.forEach( (ticket, i) => {
+
             //let rows = ticket.rows;
             let elem =
                 <Ticket key={i} rows={ticket.rows}
@@ -212,10 +284,17 @@ export default class Game extends Component {
 
                     <button onClick={ () => this.props.onTicketClick('add') }>+</button>
                     <button onClick={ () => this.props.onTicketClick('remove')}>-</button>
+                    <button className="inject"
+
+                        onClick={ () => this.injectTicket()} >
+                        Inject Data
+                    </button>
                 </div>
 
                 <div>
-                    <WinningNumbers onWinningNumberClick={this.props.onWinningNumberClick} />
+                    <WinningNumbers onWinningNumberClick={this.props.onWinningNumberClick}
+                        data={this.props.winningNumbers}
+                    />
                 </div>
                 {tickets}
 

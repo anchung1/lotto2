@@ -1,6 +1,9 @@
 import { combineReducers } from 'redux'
 import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, VisibilityFilters, ADD_TICKET, REMOVE_TICKET } from './actions'
-import {ADD_ROW, REMOVE_ROW, ADD_CELL, ROW_DATA, EntryType} from './actions'
+import {ADD_ROW, REMOVE_ROW, ADD_CELL, ROW_DATA, EntryType, INJECT_TICKETS, INJECT_WINNER} from './actions'
+import {EntryObj} from './components/EntryObj';
+
+
 const { SHOW_ALL } = VisibilityFilters
 const { WINNING_ENTRY, ROW_ENTRY} = EntryType;
 
@@ -69,7 +72,7 @@ function checkEntries(keys, checkThis) {
 }
 
 function emptyRow() {
-    return ({1:'', 2:'', 3:'', 4:'', 5:'', pb:''});
+    return (EntryObj());
 }
 
 function row (state, action) {
@@ -120,7 +123,7 @@ function packageTickets (state, action, newTicket) {
         }
     });
 
-    log(newTickets);
+    //console.dir(newTickets);
     return newTickets;
 }
 
@@ -195,6 +198,7 @@ function tickets(state=[], action) {
             if (action.entryType === WINNING_ENTRY) return state;
 
             console.log('have ROW_DATA');
+
             let rows = copyRows(state, action);
             let row = rows[action.rowID];
 
@@ -205,6 +209,11 @@ function tickets(state=[], action) {
 
             let newTicket = {rows: rows};
             return packageTickets(state, action, newTicket);
+        }
+
+        case INJECT_TICKETS:
+        {
+            return action.data;
         }
 
         default:
@@ -219,7 +228,6 @@ function winningNumbers(state={}, action) {
     switch( action.type) {
         case ROW_DATA:
         {
-            log(action.entryData);
             if (!checkEntries({ticketID: 1, rowID: 1, entryType: 1}, action)) return state;
             if  (action.entryType === ROW_ENTRY) return state;
 
@@ -231,6 +239,11 @@ function winningNumbers(state={}, action) {
 
             return row;
         }
+
+        case INJECT_WINNER: {
+            return action.data;
+        }
+
 
         default:
             return state;
