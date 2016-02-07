@@ -147,6 +147,26 @@ class restAPI {
 
     }
 
+    saveTickets(tickets) {
+        var url = this._url + 'api/saveTickets';
+        //var data = {tickets: tickets};
+        var data = JSON.stringify(tickets);
+
+        $.post(url, {data: data}).then(
+            function(data) {
+                console.log(data);
+            }
+        )
+    }
+
+    getTickets(dispatch) {
+        var url = this._url + 'api/saveTickets';
+        $.get(url).then(
+            function(data) {
+                dispatch(injectTickets(data.data.data));
+            }
+        );
+    }
 
 };
 

@@ -3,12 +3,11 @@ var router = express.Router();
 var path = require('path');
 var request = require('request');
 
-var db = require('../schema/schema.js');
-//var Dora = mongoose.model('dora', doraSchema);
-var Dora = db.Dora;
-var Users = db.Users;
-var Entry = db.Entry;
-
+var MongoClient = require('mongodb').MongoClient;
+var mongoDB = undefined;
+MongoClient.connect('mongodb://localhost:27017/lotto', function(err, db) {
+    mongoDB = db;
+});
 
 var cookieResp = {
     signed: true,
@@ -24,7 +23,7 @@ router.get('/greet', function (req, res, next) {
 
 router.get('/setCookie', function(req, res, next) {
     console.log(req.cookies);
-    res.cookie('_id', '1234', cookieResp);
+    res.cookie('_id', 'lottoUser', cookieResp);
     res.json({result: 'success'});
 
 });
@@ -35,113 +34,33 @@ router.get('/getCookie', function(req, res, next) {
     res.json({id: id});
 });
 
+router.post('/saveTickets', function(req, res, next) {
 
+    //var data = req.body.toJSON();
+    //console.log(data);
 
-
-router.post('/db', function (req, res, next) {
-    var id = req.signedCookies._id;
-
-    Users.findOne({_id: id}, 'name', function(err, user) {
-        if (err) return next(err);
-        if (!user) return next();
-
-        console.log('post with title ' + req.body.title);
-        Entry.find({'userID': id}).where('title').equals(req.body.title).exec(
-            function(err, entry) {
-                if (err) return next(err);
-
-                console.log('entry is');
-                console.log(entry);
-
-                if (!entry || entry.length==0) {
-                    console.log('new entry');
-                    var store = new Entry({title: req.body.title, data: req.body.data, userID: id});
-                    store.save(function(err, store) {
-                        if (err) return next(err);
-                        if (!store) return next();
-
-                        console.log(store);
-                        res.send('saved');
-                    });
-                } else {
-                    console.log('updating entry');
-                    entry[0].data = req.body.data;
-                    entry[0].save(function(err, elem) {
-                        if (err) return next(err);
-                        if (!elem) return next();
-
-                        console.log(elem);
-                        res.send('updated');
-                    });
-                }
-            }
-        );
-
-    });
-});
-
-router.get('/db/:title', function(req, res, next) {
-
-    var title = req.params.title;
-    var id = req.signedCookies._id;
-
-    Users.findOne({_id: id}, 'name', function(err, user) {
-        if (err) return next(err);
-        if (!user) return next();
-
-        Entry.find({'userID': id}).where('title').equals(title).exec(
-            function(err, entry) {
-                console.log('entry found ' + entry);
-                if (err) return next(err);
-                if(!entry || entry.length==0) return next();
-
-                res.json(entry[0]);
-            }
-        );
-
-    });
-});
-
-router.get('/db/userData', function(req, res, next) {
-
-    var id = req.signedCookies._id;
-
-    Users.findOne({_id: id}, 'name', function(err, user) {
-        if (err) return next(err);
-        if (!user) return next();
-
-        Entry.find({'userID':id}, function(err, entryList) {
-            if (err) return next(err);
-            if (!entryList || !entryList.length) return next();
-
-            console.log(entryList);
-            res.json(entryList);
-        })
-    });
-    //res.send('user data');
-});
-
-router.delete('/db/:title', function (req, res, next) {
-    /*Dora.findOneAndRemove({name: delItem}, function (err) {
-        if (err) return console.log('unable to delete ' + delItem);
-        res.send(delItem);
+    var data = JSON.parse(req.body.data);
+    console.log(data);
+    mongoDB.collection('lotto').updateOne( {_id: req.signedCookies._id}, {data: data}, {upsert: true},
+        function(err, result) {
+            console.log(result);
+        }
+    );
+    /*mongoDB.collection('test').insert({data: req.body}, function(error, result) {
+        console.log(result);
     });*/
-
-
     var id = req.signedCookies._id;
-    var delItem = req.params.title;
+    res.json({id: id});
+});
 
-    Users.findOne({_id: id}, 'name', function(err, user) {
-        if (err) return next(err);
-        if (!user) return next();
+router.get('/saveTickets', function(req, res, next) {
 
-        Entry.findOneAndRemove({title: delItem}, function(err) {
-            if (err) return next(err);
-            res.send('item ' + delItem + ' removed');
-        });
-
-
+    mongoDB.collection('lotto').find({_id: req.signedCookies._id}).limit(1).next( function(err, result) {
+        console.log(result);
+        res.json({data: result});
     });
 });
+
+
 
 module.exports = router;

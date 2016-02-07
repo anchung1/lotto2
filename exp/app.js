@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var credentials = require('./bin/credential.js');
 
 //var routes = require('./routes/index');
-var users = require('./routes/users');
+//var users = require('./routes/users');
 var api = require('./routes/api');
 var app = express();
 
@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.resolve(__dirname,'..', 'app/dist')));
 
 //app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
 app.use('/api', api);
 
 

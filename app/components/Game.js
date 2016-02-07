@@ -82,6 +82,8 @@ class TicketRow extends Component {
                 return this.props.data[key];
             });
 
+            //Object.keys(this.props.data).forEach() - loops through all the keys
+
             //for already mounted component, set the input value
             //winning number case
             if (Object.keys(this.props.data).length) {
@@ -308,6 +310,11 @@ export default class Game extends Component {
                 </div>
                 {tickets}
 
+                <div>
+                    <button onClick={ () => this.props.onDBSaveClick()}>Save</button>
+                    <button onClick={ () => this.props.onDBLoadClick()}>Load</button>
+                </div>
+
             </div>
         )
     }
@@ -317,6 +324,7 @@ Game.propTypes = {
     onTicketClick: PropTypes.func.isRequired,
     onRowClick:    PropTypes.func.isRequired,
     onWinningNumberClick: PropTypes.func.isRequired,
-    onRowNumberClick: PropTypes.func.isRequired
-
+    onRowNumberClick: PropTypes.func.isRequired,
+    onDBSaveClick: PropTypes.func.isRequired,
+    onDBLoadClick: PropTypes.func.isRequired
 }
