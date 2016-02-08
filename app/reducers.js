@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, VisibilityFilters, ADD_TICKET, REMOVE_TICKET } from './actions'
 import {ADD_ROW, REMOVE_ROW, ADD_CELL, ROW_DATA, EntryType, INJECT_TICKETS, INJECT_WINNER} from './actions'
+import {POPULATE_FILES, ADD_FILES} from './actions';
 import {EntryObj} from './components/EntryObj';
 
 
@@ -252,12 +253,40 @@ function winningNumbers(state={}, action) {
 
 }
 
+function fileNames(state=[], action) {
+    console.log('fileNames was called with state', state, 'and action', action);
+    switch(action.type) {
+        case POPULATE_FILES: {
+            action.data.sort( (a, b) => {return a._id < b._id ? -1 : 1});
+            return action.data;
+        }
+
+        case ADD_FILES: {
+            if (!action.data._id) return state;
+
+            let exist = state.filter( (obj) => {
+                console.log(obj, action.data);
+                return obj._id === action.data._id;
+            });
+
+            console.log('exist', exist, exist.length);
+            if (exist.length) return state;
+
+            let newList = [...state, action.data];
+            newList.sort( (a, b) => {return a._id < b._id ? -1 : 1});
+            return newList;
+        }
+        default: return state;
+
+    }
+}
 
 const todoApp = combineReducers({
     visibilityFilter,
     todos,
     tickets,
-    winningNumbers
-})
+    winningNumbers,
+    fileNames
+});
 
 export default todoApp

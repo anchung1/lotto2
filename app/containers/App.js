@@ -12,12 +12,13 @@ const {WINNING_ENTRY, ROW_ENTRY} = EntryType;
 class App extends Component {
     render() {
         // Injected by connect() call:
-        const { dispatch, visibleTodos, visibilityFilter, tickets, winningNumbers } = this.props;
+        const { dispatch, visibleTodos, visibilityFilter, tickets, winningNumbers, fileNames } = this.props;
         return (
             <div>
                 <Game
                     tickets={tickets}
                     winningNumbers={winningNumbers}
+                    fileNames={fileNames}
                     onTicketClick = { (mode) => {
                         if (mode==='add') {
                             dispatch(addTicket());
@@ -47,10 +48,15 @@ class App extends Component {
                         (data) => {dispatch(injectWinner(data))}
                     }
                     onDBSaveClick = {
-                        () => {ajax().saveTickets(tickets)}
+                        (fname) => {
+                            ajax().saveTickets(fname, tickets, dispatch);
+                        }
                     }
                     onDBLoadClick= {
                         () => {ajax().getTickets(dispatch)}
+                    }
+                    onDBFetchItem = {
+                        (name) => {ajax().fetchItem(name, dispatch)}
                     }
 
 
@@ -90,7 +96,8 @@ function select(state) {
         visibleTodos: selectTodos(state.todos, state.visibilityFilter),
         visibilityFilter: state.visibilityFilter,
         tickets: state.tickets,
-        winningNumbers: state.winningNumbers
+        winningNumbers: state.winningNumbers,
+        fileNames: state.fileNames
     }
 }
 

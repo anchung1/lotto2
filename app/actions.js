@@ -13,7 +13,8 @@ export const ADD_CELL = 'ADD_CELL';
 export const ROW_DATA = 'ROW_DATA';
 export const INJECT_TICKETS = 'INJECT_TICKETS';
 export const INJECT_WINNER = 'INJECT_WINNER';
-
+export const POPULATE_FILES = 'POPULATE_FILES';
+export const ADD_FILES = 'ADD_FILES';
 
 /*
  * other constants
@@ -112,6 +113,20 @@ export function injectWinner(data) {
     }
 }
 
+export function populateFiles(data) {
+    return {
+        type: POPULATE_FILES,
+        data: data
+    }
+}
+
+export function addFiles(data) {
+    return {
+        type: ADD_FILES,
+        data: data
+    }
+}
+
 
 //AJAX calls
 class restAPI {
@@ -147,22 +162,37 @@ class restAPI {
 
     }
 
-    saveTickets(tickets) {
+    saveTickets(fname, tickets, dispatch) {
         var url = this._url + 'api/saveTickets';
         //var data = {tickets: tickets};
         var data = JSON.stringify(tickets);
 
-        $.post(url, {data: data}).then(
+        $.post(url, {fname: fname, data: data}).then(
             function(data) {
-                console.log(data);
+                //console.log(data);
+                dispatch(addFiles(data))
             }
         )
     }
 
     getTickets(dispatch) {
         var url = this._url + 'api/saveTickets';
+
         $.get(url).then(
             function(data) {
+                //console.log(data);
+                dispatch(populateFiles(data.data));
+            }
+        );
+    }
+
+    fetchItem(name, dispatch) {
+        //console.log('fetchItem');
+        var url = this._url + 'api/saveTickets?fname='+name;
+        //TODO: work on populating from selection
+        $.get(url).then(
+            function(data) {
+                //console.log(data.data.data);
                 dispatch(injectTickets(data.data.data));
             }
         );

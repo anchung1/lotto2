@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import {FindPrize} from './PrizeEval';
 import {EntryObj} from './EntryObj';
 //import classNames from 'classnames';
@@ -228,6 +229,61 @@ class WinningNumbers extends Component {
     }
 }
 
+class Footer extends Component {
+
+    constructor(props) {
+        super(props);
+        this._init = true;
+    }
+
+    changeClick() {
+        //console.log(this.refs.select.value);
+        this.props.onDBFetchItem(this.refs.select.value);
+    }
+
+    render() {
+        //make it go read available DB entries
+        if (this._init === true) {
+            this.props.onDBLoadClick();
+            this._init = false;
+            return <div></div>;
+        }
+
+        //console.log('Footer', this.props.fileNames);
+        let select = <div></div>;
+
+        let optionsAfter = this.props.fileNames.map( (obj, i) => {
+            return (
+                <option key={'option'+(i+1)} value={obj._id}>{obj._id}</option>
+            )
+        });
+
+        let option = <option key={'option'+0}>Pick a File to Load</option>;
+        let options = [option, ...optionsAfter];
+
+        select =
+            <select ref='select' onChange={ () => {this.changeClick()}}>
+                {options}
+        </select>;
+
+        //select =
+        //    <select onClick={ () => {this.props.onDBLoadClick()}}>
+        //        {options}
+        //    </select>;
+        return (
+            <div id="footer">
+                <div>
+                    <input ref='fname' type="text" placeholder="file name"/>
+                    <button onClick={ () => this.props.onDBSaveClick(this.refs.fname.value)}>Save</button>
+                </div>
+
+                {select}
+
+            </div>
+        );
+    }
+}
+
 export default class Game extends Component {
 
     ajaxTest() {
@@ -296,10 +352,7 @@ export default class Game extends Component {
                         onClick={ () => this.injectTicket()} >
                         Inject Data
                     </button>
-                    <button className="inject"
-                        onClick={ () => this.ajaxTest()} >
-                        Ajax
-                    </button>
+
 
                 </div>
 
@@ -311,8 +364,10 @@ export default class Game extends Component {
                 {tickets}
 
                 <div>
-                    <button onClick={ () => this.props.onDBSaveClick()}>Save</button>
-                    <button onClick={ () => this.props.onDBLoadClick()}>Load</button>
+                    <Footer fileNames={this.props.fileNames} onDBSaveClick={this.props.onDBSaveClick}
+                        onDBLoadClick={this.props.onDBLoadClick}
+                        onDBFetchItem={this.props.onDBFetchItem}
+                    />
                 </div>
 
             </div>
@@ -326,5 +381,6 @@ Game.propTypes = {
     onWinningNumberClick: PropTypes.func.isRequired,
     onRowNumberClick: PropTypes.func.isRequired,
     onDBSaveClick: PropTypes.func.isRequired,
-    onDBLoadClick: PropTypes.func.isRequired
-}
+    onDBLoadClick: PropTypes.func.isRequired,
+    onDBFetchItem: PropTypes.func.isRequired
+};

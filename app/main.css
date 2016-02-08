@@ -93,3 +93,12 @@ body {
     color: red;
 }
 
+#footer {
+    display: flex;
+    flex-direction: column;
+}
+
+#footer input {
+    margin-right: 5px;
+}
+
